@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://backend-3mpcglr3j-shivanshu-rawats-projects.vercel.app/api',
+  baseURL: 'https://weekly-reminder-psmf.onrender.com/',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
