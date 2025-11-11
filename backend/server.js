@@ -53,12 +53,12 @@ app.get('/', (req, res) => {
   });
 });
 
-// FIXED: 404 handler - use '/*' instead of '*'
-app.use('/*', (req, res) => {
+// ✅ FIXED: 404 handler - use '*' instead of '/*'
+app.all('*', (req, res) => {
   res.status(404).json({ 
     error: 'Route not found',
     path: req.originalUrl,
-    availableRoutes: ['/api/health', '/api/auth/*', '/api/notes/*']
+    availableRoutes: ['/api/health', '/api/auth', '/api/notes']
   });
 });
 
