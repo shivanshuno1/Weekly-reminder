@@ -11,12 +11,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB connection with better error handling
+// MongoDB connection
 const connectDB = async () => {
   try {
     if (!process.env.MONGODB_URI) {
       console.log('❌ MONGODB_URI not found in environment variables');
-      // Don't exit - let the server start without DB
       return;
     }
     
@@ -25,11 +24,9 @@ const connectDB = async () => {
     console.log('✅ MongoDB Connected');
   } catch (error) {
     console.error('❌ MongoDB connection error:', error.message);
-    // Don't exit - let the server start without DB
   }
 };
 
-// Connect to DB (but don't block server start)
 connectDB();
 
 // Import routes
@@ -56,9 +53,13 @@ app.get('/', (req, res) => {
   });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+// FIXED: 404 handler - use '/*' instead of '*'
+app.use('/*', (req, res) => {
+  res.status(404).json({ 
+    error: 'Route not found',
+    path: req.originalUrl,
+    availableRoutes: ['/api/health', '/api/auth/*', '/api/notes/*']
+  });
 });
 
 // Error handling middleware
@@ -70,7 +71,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server - IMPORTANT FOR RENDER
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
