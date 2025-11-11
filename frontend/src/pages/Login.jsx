@@ -12,38 +12,39 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
+  e.preventDefault();
+  setIsLoading(true);
+  setError("");
+  
+  try {
+    console.log("🔄 Attempting login with:", { email, password });
     
-    try {
-      console.log("🔄 Attempting login...");
-      const response = await api.post("/auth/login", { email, password });
-      console.log("✅ Login response:", response.data);
+    // ✅ CORRECT: Use relative path (baseURL already has /api)
+    const response = await api.post("/auth/login", { email, password });
+    
+    console.log("✅ Login response:", response.data);
+    
+    if (response.data.success) {
+      localStorage.setItem("user", JSON.stringify({
+        _id: response.data.data._id,
+        username: response.data.data.username,
+        email: response.data.data.email,
+        token: response.data.data.token
+      }));
       
-      if (response.data.success) {
-        localStorage.setItem("user", JSON.stringify({
-          _id: response.data.data._id,
-          username: response.data.data.username,
-          email: response.data.data.email,
-          token: response.data.data.token
-        }));
-        
-        console.log("✅ User data saved to localStorage");
-        console.log("🔄 Navigating to /");
-        navigate("/"); // This should redirect to Dashboard
-      } else {
-        setError(response.data.message || "Login failed");
-      }
-    } catch (err) {
-      console.error("❌ Login error:", err);
-      const errorMessage = err.response?.data?.message || "Login failed. Check your credentials.";
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
+      console.log("✅ User data saved to localStorage");
+      navigate("/");
+    } else {
+      setError(response.data.message || "Login failed");
     }
-  };
-
+  } catch (err) {
+    console.error("❌ Login error:", err);
+    const errorMessage = err.response?.data?.message || "Login failed. Check your credentials.";
+    setError(errorMessage);
+  } finally {
+    setIsLoading(false);
+  }
+};
   return (
     <div className="login-bg min-h-screen flex items-center justify-center relative overflow-hidden">
       <div className="login-card relative w-full max-w-md p-10 rounded-3xl shadow-2xl text-white">
