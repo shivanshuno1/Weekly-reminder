@@ -6,7 +6,8 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    localStorage.removeItem("user"); // Also remove user data
+    window.location.href = '/login'; // ✅ FIXED: lowercase 'l' and .href
   };
 
   return (
