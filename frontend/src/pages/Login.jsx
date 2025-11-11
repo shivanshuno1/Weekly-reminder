@@ -17,30 +17,27 @@ const Login = () => {
   setError("");
   
   try {
-    console.log("🔄 Attempting login with:", { email, password });
+    console.log("🔄 Attempting login with fetch...");
     
-    // ✅ CORRECT: Use relative path (baseURL already has /api)
-    const response = await api.post("/auth/login", { email, password });
+    // Temporary: Use fetch instead of axios
+    const response = await fetch('https://weekly-reminder-psmf.onrender.com/api/auth/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email, password })
+    });
     
-    console.log("✅ Login response:", response.data);
+    const result = await response.json();
+    console.log("✅ Login response:", result);
     
-    if (response.data.success) {
-      localStorage.setItem("user", JSON.stringify({
-        _id: response.data.data._id,
-        username: response.data.data.username,
-        email: response.data.data.email,
-        token: response.data.data.token
-      }));
-      
-      console.log("✅ User data saved to localStorage");
+    if (result.success) {
+      localStorage.setItem("user", JSON.stringify(result.data));
       navigate("/");
     } else {
-      setError(response.data.message || "Login failed");
+      setError(result.message || "Login failed");
     }
   } catch (err) {
     console.error("❌ Login error:", err);
-    const errorMessage = err.response?.data?.message || "Login failed. Check your credentials.";
-    setError(errorMessage);
+    setError("Login failed. Check your credentials.");
   } finally {
     setIsLoading(false);
   }
